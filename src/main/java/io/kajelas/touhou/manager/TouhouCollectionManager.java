@@ -14,11 +14,15 @@ public class TouhouCollectionManager {
 	
 	public void persistRecords(List<TouhouCollection> collections) {
 		for (TouhouCollection collection : collections) {
-			TouhouCollection collectionInDb = dao.selectByPrimaryKey(collection.getCollectionId());
-			if (collectionInDb == null)
-				dao.insert(collection);
-			else if (!collectionInDb.getUpdateTime().equals(collection.getUpdateTime()))
-				dao.updateByPrimaryKey(collection);
+			persistRecord(collection);
 		}
+	}
+	
+	public void persistRecord(TouhouCollection collection) {
+		TouhouCollection collectionInDb = dao.selectByPrimaryKey(collection.getCollectionId());
+		if (collectionInDb == null)
+			dao.insert(collection);
+		else if (!collectionInDb.getUpdateTime().equals(collection.getUpdateTime()))
+			dao.updateByPrimaryKey(collection);
 	}
 }

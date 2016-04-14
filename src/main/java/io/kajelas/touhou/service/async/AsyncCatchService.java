@@ -1,5 +1,6 @@
 package io.kajelas.touhou.service.async;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,17 @@ public class AsyncCatchService {
 	@Async
 	public void catchAndSave(String startId, String endId) throws Exception {
 		log.info("抓取开始...");
-		List<TouhouCollection> collections = service.catchBatch("http://down.thwiki.cc/i/", startId, endId);
+		List<TouhouCollection> collections = new ArrayList<TouhouCollection>();
+		for (int i = Integer.parseInt(startId); i <= Integer.parseInt(endId); i++) {
+			TouhouCollection record = service.catchSingle("http://down.thwiki.cc/i/",i);
+			if (record != null) {
+				collections.add(record);
+				manager.persistRecord(record);
+			}
+		}
+		//List<TouhouCollection> collections = service.catchBatch("http://down.thwiki.cc/i/", startId, endId);
 		log.info("抓取到"+collections.size()+"条记录，开始写入数据库");
-		manager.persistRecords(collections);
+		//manager.persistRecords(collections);
 		log.info("抓取结束...");
 	}
 }
